@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOM Sentinel</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-group">
+        <div class="radar-dot" id="statusDot"></div>
+        <h1>DOM Sentinel</h1>
+      </div>
+      <span class="badge" id="statusBadge">Idle</span>
+    </header>
+
+    <div class="card tab-info-card">
+      <div class="field-label">Target Page</div>
+      <div class="tab-title" id="tabTitle">Loading...</div>
+      <div class="tab-url" id="tabUrl">-</div>
+    </div>
+
+    <div class="card config-card">
+      <div class="form-group">
+        <label for="intervalInput">Check Interval (seconds)</label>
+        <div class="input-row">
+          <input type="number" id="intervalInput" min="5" max="86400" step="5" value="120" />
+          <span class="unit-label">sec</span>
+        </div>
+        <div class="presets-row" id="presetsRow">
+          <button type="button" class="preset-btn" data-sec="30">30s</button>
+          <button type="button" class="preset-btn" data-sec="60">60s</button>
+          <button type="button" class="preset-btn active" data-sec="120">120s (2m)</button>
+          <button type="button" class="preset-btn" data-sec="300">300s (5m)</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="selectorInput">Target CSS Selector (optional)</label>
+        <input type="text" id="selectorInput" placeholder="e.g. #price, .stock-status, main" />
+        <span class="hint-text">Leave blank to monitor entire visible page text.</span>
+      </div>
+    </div>
+
+    <div class="card metrics-card" id="metricsCard">
+      <div class="metric-row">
+        <span>Checks Completed:</span>
+        <strong id="metricCheckCount">0</strong>
+      </div>
+      <div class="metric-row">
+        <span>Last Checked:</span>
+        <strong id="metricLastChecked">Never</strong>
+      </div>
+      <div class="metric-row">
+        <span>Baseline Hash:</span>
+        <code id="metricBaselineHash">None</code>
+      </div>
+    </div>
+
+    <div class="actions-group">
+      <button class="btn btn-primary" id="btnStart">Start Monitoring</button>
+      <button class="btn btn-secondary hidden" id="btnStop">Stop Monitoring</button>
+      <button class="btn btn-outline" id="btnTestSound">Test Sound Alert</button>
+    </div>
+
+    <div class="alert-banner hidden" id="alertBanner">
+      DOM Change Detected! Reloading halted.
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

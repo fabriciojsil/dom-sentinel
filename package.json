@@ -1,0 +1,21 @@
+{
+  "name": "dom-sentinel",
+  "version": "1.3.0",
+  "description": "Universal Manifest V3 webpage change watcher with acoustic alerts and automated halt.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/sanity.test.js"
+  },
+  "keywords": [
+    "dom-sentinel",
+    "webpage-watcher",
+    "dom-diff",
+    "brave",
+    "chrome",
+    "firefox",
+    "edge",
+    "manifest-v3"
+  ],
+  "author": "Fabricio Silva",
+  "license": "MIT"
+}
