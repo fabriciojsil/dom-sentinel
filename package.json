@@ -1,10 +1,12 @@
 {
   "name": "dom-sentinel",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Universal Manifest V3 webpage change watcher with acoustic alerts and automated halt.",
   "type": "module",
   "scripts": {
-    "test": "node --test test/sanity.test.js"
+    "test": "node --test test/sanity.test.js",
+    "package": "node scripts/package-extension.js",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "keywords": [
     "dom-sentinel",

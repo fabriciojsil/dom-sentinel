@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+node "$(dirname "$0")/../scripts/verify-commit-msg.js" "$1"
