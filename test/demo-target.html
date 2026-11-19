@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DOM Watcher Test Lab</title>
+  <title>DOM Sentinel - Multi-Element Test Lab</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 600px;
+      max-width: 680px;
       margin: 40px auto;
       padding: 24px;
       background: #0f172a;
@@ -19,59 +19,151 @@
       border-radius: 8px;
       margin-top: 20px;
       border: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .element-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #0f172a;
+      border-radius: 6px;
+      border: 1px solid #334155;
+    }
+    .element-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .element-tag {
+      font-family: monospace;
+      font-size: 11px;
+      color: #94a3b8;
     }
     .stock-badge {
       display: inline-block;
-      padding: 6px 12px;
+      padding: 4px 10px;
       border-radius: 6px;
       font-weight: bold;
-      margin-top: 10px;
+      font-size: 12px;
     }
     .out-of-stock { background: #ef4444; color: white; }
     .in-stock { background: #10b981; color: white; }
+    .price-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    .shipping-value {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
     button {
-      margin-top: 16px;
-      padding: 8px 16px;
+      padding: 6px 14px;
+      font-size: 12px;
       font-weight: 600;
       border-radius: 6px;
       border: none;
       background: #3b82f6;
       color: white;
       cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .hint-box {
+      margin-top: 16px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #93c5fd;
     }
   </style>
 </head>
 <body>
-  <h1>DOM Watcher Test Lab</h1>
-  <p>Use this page to simulate real-world DOM mutations and verify the extension.</p>
+  <h1>DOM Sentinel Test Lab</h1>
+  <p>Test multi-element DOM monitoring on a single page or across multiple tabs.</p>
+
+  <div class="hint-box">
+    <strong>Suggested Selector Input:</strong><br />
+    <code>#price, #stockStatus, #shippingEstimate</code>
+  </div>
 
   <div class="status-card">
-    <h2>Limited Edition Item</h2>
-    <div id="product-status">
-      <span class="stock-badge out-of-stock" id="stockStatus">Out of Stock</span>
+    <div class="element-row">
+      <div class="element-info">
+        <span class="element-tag">Target: #price</span>
+        <span class="price-value" id="price">$299.99</span>
+      </div>
+      <button onclick="togglePrice()">Mutate #price</button>
     </div>
-    <button id="toggleBtn" onclick="toggleStock()">Simulate Stock Drop (Mutate DOM)</button>
+
+    <div class="element-row">
+      <div class="element-info">
+        <span class="element-tag">Target: #stockStatus</span>
+        <span class="stock-badge out-of-stock" id="stockStatus">Out of Stock</span>
+      </div>
+      <button onclick="toggleStock()">Mutate #stockStatus</button>
+    </div>
+
+    <div class="element-row">
+      <div class="element-info">
+        <span class="element-tag">Target: #shippingEstimate</span>
+        <span class="shipping-value" id="shippingEstimate">Ships in 3-5 days</span>
+      </div>
+      <button onclick="toggleShipping()">Mutate #shippingEstimate</button>
+    </div>
   </div>
 
   <script>
+    function togglePrice() {
+      const el = document.getElementById('price');
+      const isSale = el.textContent === '$199.99 (Flash Sale!)';
+      el.textContent = isSale ? '$299.99' : '$199.99 (Flash Sale!)';
+      localStorage.setItem('demo_price', el.textContent);
+    }
+
     function toggleStock() {
       const el = document.getElementById('stockStatus');
       const isOut = el.classList.contains('out-of-stock');
       if (isOut) {
         el.className = 'stock-badge in-stock';
-        el.textContent = 'In Stock (Ready to Purchase!)';
-        localStorage.setItem('demo_stock', 'in_stock');
+        el.textContent = 'In Stock (Ready to Order)';
+        localStorage.setItem('demo_stock', 'in');
         return;
       }
       el.className = 'stock-badge out-of-stock';
       el.textContent = 'Out of Stock';
-      localStorage.setItem('demo_stock', 'out_stock');
+      localStorage.setItem('demo_stock', 'out');
     }
 
-    if (localStorage.getItem('demo_stock') === 'in_stock') {
+    function toggleShipping() {
+      const el = document.getElementById('shippingEstimate');
+      const isFast = el.textContent === 'Same-Day Dispatch!';
+      el.textContent = isFast ? 'Ships in 3-5 days' : 'Same-Day Dispatch!';
+      localStorage.setItem('demo_shipping', el.textContent);
+    }
+
+    const savedPrice = localStorage.getItem('demo_price');
+    if (savedPrice) {
+      document.getElementById('price').textContent = savedPrice;
+    }
+
+    const savedStock = localStorage.getItem('demo_stock');
+    if (savedStock === 'in') {
       const el = document.getElementById('stockStatus');
       el.className = 'stock-badge in-stock';
-      el.textContent = 'In Stock (Ready to Purchase!)';
+      el.textContent = 'In Stock (Ready to Order)';
+    }
+
+    const savedShipping = localStorage.getItem('demo_shipping');
+    if (savedShipping) {
+      document.getElementById('shippingEstimate').textContent = savedShipping;
     }
   </script>
 </body>

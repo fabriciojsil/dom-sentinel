@@ -13,18 +13,21 @@
         <div class="radar-dot" id="statusDot"></div>
         <h1>DOM Sentinel</h1>
       </div>
-      <span class="badge" id="statusBadge">Idle</span>
+      <div class="header-badges">
+        <span class="badge" id="watchlistCountBadge">0 Watching</span>
+        <span class="badge" id="statusBadge">Idle</span>
+      </div>
     </header>
 
     <div class="card tab-info-card">
-      <div class="field-label">Target Page</div>
+      <div class="field-label">Current Page</div>
       <div class="tab-title" id="tabTitle">Loading...</div>
       <div class="tab-url" id="tabUrl">-</div>
     </div>
 
     <div class="card config-card">
       <div class="form-group">
-        <label for="intervalInput">Check Interval (seconds)</label>
+        <label for="intervalInput">Check Cadence (seconds)</label>
         <div class="input-row">
           <input type="number" id="intervalInput" min="5" max="86400" step="5" value="120" />
           <span class="unit-label">sec</span>
@@ -38,9 +41,9 @@
       </div>
 
       <div class="form-group">
-        <label for="selectorInput">Target CSS Selector (optional)</label>
-        <input type="text" id="selectorInput" placeholder="e.g. #price, .stock-status, main" />
-        <span class="hint-text">Leave blank to monitor entire visible page text.</span>
+        <label for="selectorInput">DOM Targets (comma-separated)</label>
+        <input type="text" id="selectorInput" placeholder="e.g. #price, .stock-status, #shipping" />
+        <span class="hint-text">Track multiple DOM elements at once. Empty = full visible body.</span>
       </div>
     </div>
 
@@ -54,20 +57,60 @@
         <strong id="metricLastChecked">Never</strong>
       </div>
       <div class="metric-row">
-        <span>Baseline Hash:</span>
-        <code id="metricBaselineHash">None</code>
+        <span>Target Elements:</span>
+        <code id="metricElementsSummary">body</code>
       </div>
     </div>
 
-    <div class="actions-group">
-      <button class="btn btn-primary" id="btnStart">Start Monitoring</button>
-      <button class="btn btn-secondary hidden" id="btnStop">Stop Monitoring</button>
-      <button class="btn btn-outline" id="btnTestSound">Test Sound Alert</button>
+    <div class="card alert-channels-card">
+      <div class="card-section-title">Alert Channels</div>
+      
+      <div class="toggle-row">
+        <label class="toggle-control" for="enableHighlightToggle">
+          <input type="checkbox" id="enableHighlightToggle" checked />
+          <span class="toggle-slider"></span>
+          <span class="toggle-text">In-Page Visual Spotlight</span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle-control" for="enableSlackToggle">
+          <input type="checkbox" id="enableSlackToggle" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-text">Slack Mobile Alerts</span>
+        </label>
+      </div>
+
+      <div class="slack-config-group" id="slackConfigGroup">
+        <label for="slackWebhookInput">Slack Webhook URL</label>
+        <input type="text" id="slackWebhookInput" placeholder="https://hooks.slack.com/services/..." spellcheck="false" autocomplete="off" />
+        <div class="slack-test-row">
+          <button type="button" class="btn-mini btn-mini-primary" id="testSlackBtn">Test Slack Alert</button>
+          <span class="slack-status-text" id="slackStatusText"></span>
+        </div>
+      </div>
     </div>
 
     <div class="alert-banner hidden" id="alertBanner">
-      DOM Change Detected! Reloading halted.
+      <div class="alert-title">DOM Change Detected!</div>
+      <div class="alert-detail" id="alertDetail">Content mutated</div>
     </div>
+
+    <div class="actions-group">
+      <button class="btn btn-primary" id="btnStart">Start Watching This Tab</button>
+      <button class="btn btn-secondary hidden" id="btnStop">Stop Watching This Tab</button>
+      <button class="btn btn-outline" id="btnTestSound">Test Sound Alert</button>
+    </div>
+
+    <section class="watchlist-section">
+      <div class="watchlist-header">
+        <h2>Active Watchlist</h2>
+        <span class="watchlist-total" id="watchlistTotal">0 tabs</span>
+      </div>
+      <div class="watchlist-container" id="watchlistContainer">
+        <div class="watchlist-empty" id="watchlistEmpty">No other pages are currently monitored.</div>
+      </div>
+    </section>
   </div>
 
   <script src="popup.js" type="module"></script>
