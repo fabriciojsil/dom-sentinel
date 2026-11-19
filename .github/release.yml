@@ -1,0 +1,28 @@
+changelog:
+  categories:
+    - title: 🚀 New Features
+      labels:
+        - feature
+        - enhancement
+      commit_prefix: feat
+    - title: 🐛 Bug Fixes
+      labels:
+        - fix
+        - bug
+      commit_prefix: fix
+    - title: 📝 Documentation
+      labels:
+        - docs
+        - documentation
+      commit_prefix: docs
+    - title: 🔧 Maintenance & CI
+      labels:
+        - chore
+        - ci
+        - test
+      commit_prefix:
+        - chore
+        - ci
+        - test
+        - refactor
+        - perf

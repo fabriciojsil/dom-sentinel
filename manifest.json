@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DOM Sentinel - Webpage Change Watcher",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Monitors webpages at custom second intervals, detects DOM changes, alerts with loud acoustic alarm, and halts reloading. Compatible with Brave, Chrome, Firefox, and Edge.",
   "permissions": [
     "storage",
@@ -24,6 +24,7 @@
     }
   },
   "background": {
+    "scripts": ["background.js"],
     "service_worker": "background.js",
     "type": "module"
   },
