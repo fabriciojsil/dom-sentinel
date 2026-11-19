@@ -39,37 +39,97 @@ export async function computeHash(text) {
 }
 
 /**
- * In-browser inspection routine invoked inside the monitored tab.
- * @param {string} selector
- * @returns {Promise<{ hash: string, preview: string, length: number }>}
+ * Extracts normalized content from multiple CSS selectors and compiles a compound digest.
+ * @param {string} selectorsString
+ * @param {Document|Element} [docRoot]
+ * @returns {Promise<{ compoundText: string, hash: string, elements: Record<string, string>, length: number }>}
  */
-export async function inspectDom(selector) {
-  let targetElement = null;
-
-  if (selector && selector.trim().length > 0) {
-    targetElement = document.querySelector(selector.trim());
+export async function extractElements(selectorsString, docRoot = typeof document !== 'undefined' ? document : null) {
+  if (!docRoot) {
+    return { compoundText: '', hash: '', elements: {}, length: 0 };
   }
 
-  if (!targetElement) {
-    targetElement = document.body;
-  }
+  const rawList = selectorsString ? selectorsString.split(',') : [];
+  const selectors = rawList.map((s) => s.trim()).filter((s) => s.length > 0);
 
-  if (!targetElement) {
+  if (selectors.length === 0) {
+    const body = docRoot.body;
+    if (!body) {
+      return { compoundText: '', hash: '', elements: {}, length: 0 };
+    }
+    const raw = body.innerText || body.textContent || '';
+    const normalized = normalizeContent(raw);
+    const hash = await computeHash(normalized);
     return {
-      hash: '',
-      preview: '',
-      length: 0,
+      compoundText: normalized,
+      hash,
+      elements: { body: normalized.slice(0, 150) },
+      length: normalized.length,
     };
   }
 
-  const raw = targetElement.innerText || targetElement.textContent || '';
-  const normalized = normalizeContent(raw);
-  const hash = await computeHash(normalized);
-  const preview = normalized.slice(0, 100);
+  const elementsMap = {};
+  const segments = [];
+
+  for (const sel of selectors) {
+    const nodes = docRoot.querySelectorAll(sel);
+    if (nodes.length === 0) {
+      elementsMap[sel] = '[NOT FOUND]';
+      segments.push(`[SELECTOR: ${sel}]\n[NOT FOUND]`);
+      continue;
+    }
+
+    const nodeTexts = [];
+    for (const node of nodes) {
+      const raw = node.innerText || node.textContent || '';
+      const norm = normalizeContent(raw);
+      if (norm.length > 0) {
+        nodeTexts.push(norm);
+      }
+    }
+
+    const combined = nodeTexts.join(' | ');
+    elementsMap[sel] = combined.slice(0, 150);
+    segments.push(`[SELECTOR: ${sel}]\n${combined}`);
+  }
+
+  const compoundText = segments.join('\n---\n');
+  const hash = await computeHash(compoundText);
 
   return {
+    compoundText,
     hash,
-    preview,
-    length: normalized.length,
+    elements: elementsMap,
+    length: compoundText.length,
   };
+}
+
+/**
+ * Compares two element snapshots and pinpoints specific changes.
+ * @param {Record<string, string>} prev
+ * @param {Record<string, string>} curr
+ * @returns {string[]}
+ */
+export function findChangedElements(prev, curr) {
+  if (!prev) {
+    return [];
+  }
+
+  if (!curr) {
+    return ['Content removed'];
+  }
+
+  const changes = [];
+  const allKeys = Array.from(new Set([...Object.keys(prev), ...Object.keys(curr)]));
+
+  for (const k of allKeys) {
+    const before = prev[k] || '[NEW]';
+    const after = curr[k] || '[REMOVED]';
+    if (before === after) {
+      continue;
+    }
+    changes.push(`${k}: '${before}' -> '${after}'`);
+  }
+
+  return changes;
 }
